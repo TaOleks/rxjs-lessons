@@ -1,6 +1,6 @@
-import { Observable } from "rxjs";
+import { Observable, debounceTime, map } from "rxjs";
 
-const search$ = new Observable(observer =>{
+const search$ = new Observable<Event>(observer =>{
 
 
   const search = document.getElementById('search')
@@ -12,22 +12,24 @@ const search$ = new Observable(observer =>{
   search?.addEventListener('input',event =>{
 
     observer.next(event)
-    observer.complete()
+
   })
 
 
 });
 
 
-search$.subscribe({
-  next:value=>{
+search$.pipe(
+  map(event => {
+    return (event.target as HTMLInputElement).value;
+
+  }),
+   debounceTime(1000))
+.subscribe( value=>{
   console.log(value);
-  },
-  error:err => console.log(err),
-  complete: ()=> {
-    console.log('Event end')
   }
-})
+
+)
 
 
 
